@@ -25,7 +25,7 @@ function Board() {
   const handleClick = (idx) => {
     const nextSquare = square.slice();
     // validation for clicking on already clicked square
-    if (square[idx] !== null || winner) return; // index jodi khali hoy thaole likho or khali nahole return koro
+    if (square[idx] !== null || calculateWinner(square)) return; // index jodi khali hoy thaole likho or khali nahole return koro
 
     // toggling the next player X/O
     if (next) {
@@ -37,9 +37,15 @@ function Board() {
     setNext(!next);
   };
 
+  // reset the game
+  const handleReset = () => {
+    setSquare(Array(9).fill(null));
+    setNext(true);
+  };
+
   return (
     <div>
-      <h1 className="text-3xl font-bold">{status}</h1>
+      <h1 className="text-2xl font-bold">{status}</h1>
       <div className="flex">
         <Square value={square[0]} onSquareClick={() => handleClick(0)} />
         <Square value={square[1]} onSquareClick={() => handleClick(1)} />
@@ -55,6 +61,12 @@ function Board() {
         <Square value={square[7]} onSquareClick={() => handleClick(7)} />
         <Square value={square[8]} onSquareClick={() => handleClick(8)} />
       </div>
+      <button
+        className="text-2xl font-semibold bg-white text-black px-2 mx-2 rounded-sm"
+        onClick={handleReset}
+      >
+        Reset
+      </button>
     </div>
   );
 }
