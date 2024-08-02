@@ -11,9 +11,7 @@ function Square({ value, onSquareClick }) {
   );
 }
 
-export function Board() {
-  const [square, setSquare] = useState(Array(9).fill(null));
-  const [next, setNext] = useState(true);
+function Board({ square, next, onPlay, handleReset }) {
   // check for winner
   const winner = calculateWinner(square);
   let status;
@@ -33,14 +31,10 @@ export function Board() {
     } else {
       nextSquare[idx] = "O";
     }
-    setSquare(nextSquare);
-    setNext(!next);
-  };
 
-  // reset the game
-  const handleReset = () => {
-    setSquare(Array(9).fill(null));
-    setNext(true);
+    onPlay(nextSquare);
+    // setSquare(nextSquare);
+    // setNext(!next);
   };
 
   return (
@@ -64,25 +58,65 @@ export function Board() {
         </div>
         <button
           className="text-2xl font-semibold bg-white text-black px-2 mx-2 rounded-sm"
-          onClick={handleReset}
+          //onClick={handleReset}
         >
           Reset
         </button>
       </div>
-      <div>
+      {/* <div>
         <h1 className="text-2xl font-bold">One Step Back</h1>
-      </div>
+      </div> */}
     </div>
   );
 }
 
 export default function Game() {
-  return (
-    <div>
-      <div>
-        <Board />
+  const [history, setHistory] = useState([Array(9).fill(null)]);
+  const [next, setNext] = useState(true);
+  const currentSquare = history[history.length - 1];
+
+  function handlePlay(nextSquares) {
+    setNext(!next);
+    setHistory([...history, nextSquares]);
+  }
+
+  // jump to specific step in the game
+  function jumpTo(step) {
+    setHistory(history.slice(0, step + 1));
+    setNext(step % 2 === 0);
+  }
+
+  // display the history of the game
+  const move = history.map((square, index) => {
+    let description;
+    if (index > 0) {
+      description = "Go to move #" + index;
+    } else {
+      description = "Go to game start";
+    }
+    return (
+      <div key={index}>
+        <button onClick={() => jumpTo(index)}>{description}</button>
       </div>
-      <div>{/* TBD */}</div>
+    );
+  });
+
+  // reset the game
+  // const handleReset = () => {
+  //   setHistory(Array(9).fill(null));
+  //   setNext(true);
+  // };
+  return (
+    <div className="text-2xl font-semibold flex justify-center items-baseline gap-5">
+      <div>
+        <Board
+          square={currentSquare}
+          next={next}
+          onPlay={handlePlay}
+          //handleReset={handleReset}
+        />
+      </div>
+      <div>{move}</div>
     </div>
   );
 }
